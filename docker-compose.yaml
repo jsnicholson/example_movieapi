@@ -1,0 +1,22 @@
+version: '2.24'
+
+services:
+    function-app:
+        build:
+            context: ./MovieAPI/FunctionApp
+            dockerfile: Dockerfile
+        ports:
+            - "8080:80"
+        environment:
+            - AzureWebJobsStorage=UseDevelopmentStorage=true
+            - FUNCTIONS_WORKER_RUNTIME=dotnet
+        volumes:
+            - ./MovieAPI/FunctionApp:/src/FunctionApp
+            
+    sql-server:
+        image: mcr.microsoft.com/mssql/server
+        environment:
+            SA_PASSWORD: password #use something stronger
+            ACCEPT_EULA: "Y"
+        ports:
+            - "1433:1433"
