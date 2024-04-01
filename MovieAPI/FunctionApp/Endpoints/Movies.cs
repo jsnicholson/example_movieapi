@@ -53,7 +53,7 @@ namespace FunctionApp.Endpoints {
                 Pagination pagination = Pagination.DefaultPagination;
                 try {
                     pagination = PaginationFactory.CreatePagination(parameterPage, parameterPageSize, movies.Count());
-                } catch (ArgumentException exception) {
+                } catch (Exception exception) {
                     return new BadRequestObjectResult(new {
                         message = exception.Message
                     });

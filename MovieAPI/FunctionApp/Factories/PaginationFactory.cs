@@ -14,8 +14,8 @@ namespace FunctionApp.Factories {
             int page;
             try {
                 page = int.Parse(parameterPage);
-            } catch (ArgumentException exception) {
-                throw new ArgumentException($"'{parameterPage}' is not a valid '{nameof(parameterPage)}' value. '{nameof(parameterPage)}' must be a positive integer");
+            } catch (Exception exception) {
+                throw new Exception($"'{parameterPage}' is not a valid '{nameof(parameterPage)}' value. '{nameof(parameterPage)}' must be a positive integer");
             }
             if (page < 1) {
                 throw new ArgumentException($"'{parameterPage}' is not a valid '{nameof(parameterPage)}' value. '{nameof(parameterPage)}' must be a positive integer");
@@ -24,8 +24,8 @@ namespace FunctionApp.Factories {
             int pageSize;
             try {
                 pageSize = int.Parse(parameterPageSize);
-            } catch (ArgumentException exception) {
-                throw new ArgumentException($"'{parameterPageSize}' is not a valid '{nameof(parameterPageSize)}' value. '{nameof(parameterPageSize)}' must be a positive integer");
+            } catch (Exception exception) {
+                throw new Exception($"'{parameterPageSize}' is not a valid '{nameof(parameterPageSize)}' value. '{nameof(parameterPageSize)}' must be a positive integer");
             }
             if (pageSize < 1) {
                 throw new ArgumentException($"'{parameterPageSize}' is not a valid '{nameof(parameterPageSize)}' value. '{nameof(parameterPageSize)}' must be a positive integer");
