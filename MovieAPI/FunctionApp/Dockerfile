@@ -6,7 +6,7 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["/FunctionApp.csproj", "FunctionApp/"]
+COPY ["FunctionApp/FunctionApp.csproj", "FunctionApp/"]
 RUN dotnet restore "FunctionApp/FunctionApp.csproj"
 COPY . .
 WORKDIR "/src/FunctionApp"
@@ -20,3 +20,5 @@ WORKDIR /home/site/wwwroot
 COPY --from=publish /app/publish .
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
     AzureFunctionsJobHost__Logging__Console__IsEnabled=true
+	FUNCTIONS_WORKER_RUNTIME=dotnet
+	WEBSITES_ENABLE_APP_SERVICE_STORAGE=false

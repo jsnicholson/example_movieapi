@@ -1,11 +1,17 @@
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Linq;
+using FunctionApp.Models;
+using System;
+using System.Linq.Dynamic;
+using FunctionApp.Database.Models;
+using FunctionApp.Factories;
+using FunctionApp.Database;
+using FunctionApp.Endpoints.Models;
 
 namespace FunctionApp.Endpoints {
     public class Movies {
@@ -25,9 +31,22 @@ namespace FunctionApp.Endpoints {
                 // get movies but keep queryable so EF doesnt pull them over the wire
                 IQueryable<Movie> movies = _context.movies;
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+                string parameterTitle = req.Query[Constants.PARAMETER_TITLE];
+                if(parameterTitle != null) {
+                    movies = movies.Where(m => m.Title.ToLower().Contains(parameterTitle.ToLower()));
+                }
+
+                string parameterGenre = req.Query[Constants.PARAMETER_GENRE];
+                if(parameterGenre != null) {
+                    movies = movies.Where(m => m.Genre.ToLower().Contains(parameterGenre.ToLower()));
+                }
+
+                // get sort and check property exists
+                string parameterSort = req.Query[Constants.PARAMETER_SORT];
+                if(parameterSort != null) {
+                    movies = movies.OrderBy($"{parameterSort} DESC");
+                }
+
                 // get pagination parameters and build Pagination object
                 string parameterPage = req.Query[Constants.PARAMETER_PAGE];
                 string parameterPageSize = req.Query[Constants.PARAMETER_PAGESIZE];
@@ -39,7 +58,7 @@ namespace FunctionApp.Endpoints {
                         message = exception.Message
                     });
                 }
-
+                
                 // apply pagination
                 movies = movies
                     .Skip((pagination.page -1) * pagination.pageSize)

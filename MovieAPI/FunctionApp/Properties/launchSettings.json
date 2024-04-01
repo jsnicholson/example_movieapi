@@ -1,8 +1,7 @@
 {
   "profiles": {
     "API": {
-      "commandName": "Project",
-      "commandLineArgs": "host start --port 8080"
+      "commandName": "Project"
     },
     "Docker": {
       "commandName": "Docker",
