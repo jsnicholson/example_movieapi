@@ -22,16 +22,33 @@ namespace FunctionApp.Endpoints {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             try {
+                // get movies but keep queryable so EF doesnt pull them over the wire
+                IQueryable<Movie> movies = _context.movies;
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             name = name ?? data?.name;
+                // get pagination parameters and build Pagination object
+                string parameterPage = req.Query[Constants.PARAMETER_PAGE];
+                string parameterPageSize = req.Query[Constants.PARAMETER_PAGESIZE];
+                Pagination pagination = Pagination.DefaultPagination;
+                try {
+                    pagination = PaginationFactory.CreatePagination(parameterPage, parameterPageSize, movies.Count());
+                } catch (ArgumentException exception) {
+                    return new BadRequestObjectResult(new {
+                        message = exception.Message
+                    });
+                }
 
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
+                // apply pagination
+                movies = movies
+                    .Skip((pagination.page -1) * pagination.pageSize)
+                    .Take(pagination.pageSize);
 
-            return new OkObjectResult(responseMessage);
+                return new OkObjectResult(new MoviesResponse() {
+                    movies = movies.ToList(),
+                    pagination = pagination
+                });
             } catch (Exception exception) {
                 return new ObjectResult(new {
                     message = exception.Message
