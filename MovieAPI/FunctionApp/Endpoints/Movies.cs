@@ -21,7 +21,7 @@ namespace FunctionApp.Endpoints {
             ILogger log) {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
+            try {
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
@@ -32,6 +32,13 @@ namespace FunctionApp.Endpoints {
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
 
             return new OkObjectResult(responseMessage);
+            } catch (Exception exception) {
+                return new ObjectResult(new {
+                    message = exception.Message
+                }) {
+                    StatusCode = StatusCodes.Status500InternalServerError
+                };
+            }
         }
     }
 }
