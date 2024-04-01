@@ -8,9 +8,15 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace FunctionApp.Endpoints {
-    public static class Movies {
+    public class Movies {
+        private readonly MovieDbContext _context;
+
+        public Movies(MovieDbContext db) {
+            _context = db;
+        }
+
         [FunctionName("movies")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             ILogger log) {
             log.LogInformation("C# HTTP trigger function processed a request.");
